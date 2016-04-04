@@ -77,9 +77,6 @@ revert() {
         done
         echo ""
         echo "Missing files reverted in path: $REVERT_PATH"
-        echo ""
-        echo "SVN status $REVERT_PATH:"
-        svn st $REVERT_PATH
     fi
 }
 
