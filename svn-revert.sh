@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 
 usage() {
     printf "Usage: `basename $0` [-h] [PATH] [FILE]" 1>&2; exit 1;
