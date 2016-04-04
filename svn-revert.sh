@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/sh -x
 
 usage() {
-    echo "Usage: `basename $0` [-h] [PATH] [FILE]" 1>&2; exit 1;
+    printf "Usage: `basename $0` [-h] [PATH] [FILE]" 1>&2; exit 1;
 }
 
 # check argument is path or file
@@ -44,39 +44,50 @@ revert() {
     then
         exit $?
     fi
-    echo "Finding missing files in current SVN repo..."
+
+    printf "Finding missing files in current SVN repo..."
     MISSING_FILES=`svn st $REVERT_PATH|grep \!|awk '{print $2}'`
-    MISSING_FILES_LEN=`echo "${#MISSING_FILES}"`
+    MISSING_FILES_LEN=`printf "${#MISSING_FILES}"`
     if [ "$?" -eq "0" ];then
         if [ "$MISSING_FILES_LEN" -eq "0" ]
         then
-            echo "Zero missing files in svn repo: `dirname $REVERT_PATH`"
+            printf "Zero missing files in svn repo: `dirname $REVERT_PATH`\n"
             exit 0
         fi
-        echo "SVN Missing files to be revert:"
+        printf "SVN Missing files to be revert:\n"
         for line in $MISSING_FILES
         do
-            echo "    $line"
+            printf "\t$line\n"
         done
+
+        ANSWER=""
         while true; do
-            echo ""
-            read -p "Do you wish to revert all these file? (y/n)" yn
+            printf "\n"
+            read -p "Do you wish to revert all these file? (y/n) " yn
             case $yn in
                 [Yy]* )
-                    for line in $MISSING_FILES
-                    do
-                        echo "Reverting file:$line, continuing..."
-                        svn revert $line
-                    done;
-
+                    ANSWER="y"
                     break;;
                 [Nn]* )
+                    ANSWER="n"
                     exit;;
-                * ) echo "Please answer yes or no.";;
+                * ) printf "Please answer yes or no. \n";;
             esac
         done
-        echo ""
-        echo "Missing files reverted in path: $REVERT_PATH"
+
+        if [ "$ANSWER" == "n" ]
+        then
+            exit 0
+        fi
+
+        trap "exit 1" SIGINT
+        for line in $MISSING_FILES
+        do
+            printf "\nReverting file:$line, continuing...\n"
+            svn revert $line
+        done;
+
+        printf "\nMissing files reverted in path: $REVERT_PATH"
     fi
 }
 
@@ -86,5 +97,6 @@ do	case "$o" in
             exit 0;;
     esac
 done
+
 
 revert $1
