@@ -36,6 +36,8 @@ Missing files reverted in path: path/to/revert
 SVN status path/to/revert:  
 ```
 
+Also you can use `Ctrl-C` to terminate this program
+
 ## Fetch OR Download
 This script stored in github.com, feel free to download it and use,
 simply run command as below:
