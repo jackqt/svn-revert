@@ -6,3 +6,4 @@
   - Multiple path argument
 + Detailed Help Information
 + Manuel Info for svn-revert
++ Select specified files from missing file list
